@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 25% 5%;
+    --foreground: 210 20% 90%;
+
+    --card: 222 20% 8%;
+    --card-foreground: 210 20% 90%;
+
+    --popover: 222 20% 8%;
+    --popover-foreground: 210 20% 90%;
+
+    --primary: 187 100% 50%;
+    --primary-foreground: 222 25% 5%;
+
+    --secondary: 222 15% 14%;
+    --secondary-foreground: 210 20% 85%;
+
+    --muted: 222 15% 12%;
+    --muted-foreground: 215 15% 50%;
+
+    --accent: 38 95% 55%;
+    --accent-foreground: 222 25% 5%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 222 15% 15%;
+    --input: 222 15% 15%;
+    --ring: 187 100% 50%;
+    --success: 142 71% 45%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 222 20% 6%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 187 100% 50%;
+    --sidebar-primary-foreground: 222 25% 5%;
+    --sidebar-accent: 222 15% 12%;
+    --sidebar-accent-foreground: 210 20% 85%;
+    --sidebar-border: 222 15% 15%;
+    --sidebar-ring: 187 100% 50%;
+
+    /* Custom Vync tokens */
+    --cyan-glow: 187 100% 50%;
+    --amber-glow: 38 95% 55%;
+    --surface-glass: 222 20% 10%;
+    --surface-elevated: 222 18% 12%;
+    --terminal-bg: 222 30% 4%;
+    --terminal-border: 187 80% 30%;
+    --heatmap-low: 187 100% 30%;
+    --heatmap-mid: 38 95% 55%;
+    --heatmap-high: 0 72% 51%;
+  }
+
+  .dark {
+    --background: 222 25% 5%;
+    --foreground: 210 20% 90%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  code, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-[hsl(var(--surface-glass)/0.6)] backdrop-blur-[20px] border border-[hsl(var(--border))];
+  }
+
+  .glass-elevated {
+    @apply bg-[hsl(var(--surface-elevated)/0.7)] backdrop-blur-[24px] border border-[hsl(var(--border))];
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px hsl(187 100% 50% / 0.15), 0 0 60px hsl(187 100% 50% / 0.05);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 20px hsl(38 95% 55% / 0.15), 0 0 60px hsl(38 95% 55% / 0.05);
+  }
+
+  .glow-border-cyan {
+    border-color: hsl(187 80% 30%);
+    box-shadow: 0 0 15px hsl(187 100% 50% / 0.1), inset 0 0 15px hsl(187 100% 50% / 0.03);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px hsl(187 100% 50% / 0.5), 0 0 30px hsl(187 100% 50% / 0.2);
+  }
+
+  .text-glow-amber {
+    text-shadow: 0 0 10px hsl(38 95% 55% / 0.5), 0 0 30px hsl(38 95% 55% / 0.2);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(222 15% 20%) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(222 15% 20%);
+    border-radius: 2px;
+  }
+}
