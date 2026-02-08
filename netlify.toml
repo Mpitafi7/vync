@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+# Build-time env (Vite bakes VITE_* into the bundle). For PUBLIC repos do NOT put real keys here — set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify Dashboard → Environment variables.
+[build.environment]
+  NODE_VERSION = "20"
+  # Replace with your values only if repo is PRIVATE; else set in Dashboard:
+  # VITE_SUPABASE_URL = "https://your-project.supabase.co"
+  # VITE_SUPABASE_ANON_KEY = "your-anon-key"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
