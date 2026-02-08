@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { FileText, ListOrdered, Brain, Loader2, Check, Lightbulb, MessageCircle } from "lucide-react";
+import { FileText, ListOrdered, Brain, Loader2, Check, Lightbulb, MessageCircle, AlertTriangle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { GeminiAnalysisPayload, VideoAnalysisRow, KeyInsightItem } from "@/types/database";
 import type { AnalysisResult } from "@/types/analysis";
@@ -16,7 +16,8 @@ const PROGRESS_STEPS = [
   "Performing High-Reasoning Scan...",
 ] as const;
 const STEP_INTERVAL_MS = 8000;
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
 /** Columns to fetch from video_analyses (must match DB schema). */
 const VIDEO_ANALYSES_SELECT = "id, video_id, summary, thought_trace, chapters, key_insights, timeline_data, diagram_data";
@@ -82,7 +83,7 @@ function SteppedProgressIndicator({
         })}
       </div>
       <p className="font-mono text-xs text-muted-foreground">
-        Realtime + 5s polling. No manual invoke — webhook triggers analysis.
+        Realtime + 3s polling. No manual invoke — webhook triggers analysis.
       </p>
     </div>
   );
@@ -170,6 +171,7 @@ export default function AnalysisView({ videoId: videoIdProp, publicUrl, payload:
   const [error, setError] = useState<string | null>(null);
   const [progressStep, setProgressStep] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollStartTimeRef = useRef<number>(0);
 
   const [fallbackVideoId, setFallbackVideoId] = useState<string | null>(null);
   const payload = payloadProp !== undefined ? payloadProp : internalPayload;
@@ -344,7 +346,18 @@ export default function AnalysisView({ videoId: videoIdProp, publicUrl, payload:
 
     fetchVideoStatus();
 
+    pollStartTimeRef.current = Date.now();
+
     const runPoll = () => {
+      if (Date.now() - pollStartTimeRef.current > MAX_POLL_TIMEOUT_MS) {
+        if (pollRef.current) {
+          clearInterval(pollRef.current);
+          pollRef.current = null;
+        }
+        setError("Analysis is taking longer than expected (5 min). Please try again or use a shorter video.");
+        setLoading(false);
+        return;
+      }
       fetchOnce(false).then((payload) => {
         if (payload) {
           applyResult(payload);
@@ -515,10 +528,18 @@ export default function AnalysisView({ videoId: videoIdProp, publicUrl, payload:
 
   if (videoStatus === "failed") {
     return (
-      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
-        <p className="font-mono text-sm text-destructive">
-          {error || "Analysis failed. Please try again or use a shorter video."}
-        </p>
+      <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-6 space-y-3">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-destructive mt-0.5" />
+          <div>
+            <p className="font-mono text-sm font-medium text-destructive">
+              {error || "Analysis failed. Please try again or use a shorter video."}
+            </p>
+            <p className="font-mono text-xs text-muted-foreground mt-2">
+              Try again with a shorter video or check your connection. If it keeps failing, the file may be too large or in an unsupported format.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
