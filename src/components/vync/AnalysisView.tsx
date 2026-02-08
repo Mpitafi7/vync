@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { FileText, ListOrdered, Brain, Loader2, Check, Lightbulb } from "lucide-react";
+import { FileText, ListOrdered, Brain, Loader2, Check, Lightbulb, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { GeminiAnalysisPayload, VideoAnalysisRow, KeyInsightItem } from "@/types/database";
 import type { AnalysisResult } from "@/types/analysis";
@@ -8,6 +8,7 @@ import VideoPlayer from "./VideoPlayer";
 import IntelligenceTimeline from "./IntelligenceTimeline";
 import CognitiveConsole from "./CognitiveConsole";
 import EvidenceGrid from "./EvidenceGrid";
+import { VideoChat } from "./VideoChat";
 
 const PROGRESS_STEPS = [
   "Video secured in vault...",
@@ -553,6 +554,7 @@ export function AnalysisViewWithConsole({
   publicUrl: string;
 }) {
   const [payload, setPayload] = useState<GeminiAnalysisPayload | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     const channel = supabase
@@ -600,8 +602,30 @@ export function AnalysisViewWithConsole({
       <main className="flex-1 overflow-y-auto p-6 scrollbar-thin">
         <AnalysisView videoId={videoId} publicUrl={publicUrl} payload={payload} />
       </main>
-      <aside className="hidden lg:block w-[380px] border-l border-border p-4">
-        <CognitiveConsole logs={analysis?.consoleLogs} />
+      <aside className="hidden lg:flex lg:w-[380px] lg:shrink-0 lg:flex-col lg:border-l lg:border-border lg:overflow-hidden">
+        {showChat ? (
+          <VideoChat
+            videoId={videoId}
+            open={true}
+            onClose={() => setShowChat(false)}
+          />
+        ) : (
+          <>
+            <div className="flex justify-end px-2 py-1.5 border-b border-border/50">
+              <button
+                type="button"
+                onClick={() => setShowChat(true)}
+                className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-mono text-[10px] text-primary hover:bg-primary/10 border border-primary/30 transition-colors"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span>AI Video Chat</span>
+              </button>
+            </div>
+            <div className="flex-1 min-h-0 p-4 pt-2">
+              <CognitiveConsole logs={analysis?.consoleLogs} />
+            </div>
+          </>
+        )}
       </aside>
     </>
   );
