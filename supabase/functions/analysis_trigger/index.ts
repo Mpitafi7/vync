@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const BUCKET = "videos";
 const GEMINI_UPLOAD = "https://generativelanguage.googleapis.com/upload/v1beta/files";
-const GEMINI_GENERATE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent";
+const GEMINI_GENERATE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-001:generateContent";
 
 const ANALYSIS_PROMPT = `You are a video intelligence engine. Analyze this video and return a single JSON object (no markdown, no code fence) with this exact structure:
 
